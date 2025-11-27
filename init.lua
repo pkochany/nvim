@@ -1,3 +1,6 @@
+---@meta
+_G.vim = vim -- tell lua_ls that vim exists globally
+
 vim.o.number = true
 vim.o.relativenumber = true
 vim.o.wrap = false
@@ -23,6 +26,8 @@ vim.keymap.set('n', '<leader>ff', vim.lsp.buf.format)
 vim.keymap.set('n', '<leader>t', ":Pick files<CR>")
 vim.keymap.set('n', '<leader>r', ":Pick grep_live<CR>")
 vim.keymap.set('n', '<leader>e', ":Oil<CR>")
+vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { noremap = true, silent = true })
+vim.keymap.set('i', '<C-Space>', vim.lsp.buf.signature_help, { desc = "Show signature" })
 
 vim.pack.add({
 	{ src = "https://github.com/vague-theme/vague.nvim" },
@@ -48,3 +53,23 @@ vim.api.nvim_create_autocmd('LspAttach', {
 	end,
 })
 vim.cmd("set completeopt+=noselect")
+
+-- The single most important option for Python/Django
+vim.lsp.config('pyright', {
+  -- Server-specific settings. See `:help lsp-quickstart`
+  settings = {
+    python = {
+      analysis = {
+        -- This is the magic switch that makes Pyright show parameter names
+        autoImportCompletions = true,
+        -- This makes it suggest parameter names while you type inside (…)
+        inlayHints = {
+          functionLikeParameterNames = true,   -- ← shows max_length= while typing
+          variableTypes = true,
+        },
+      },
+    },
+  },
+})
+
+

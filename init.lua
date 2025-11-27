@@ -40,12 +40,15 @@ vim.pack.add({
 	{ src = "https://github.com/neovim/nvim-lspconfig" },  -- lsp server configs
 	{ src = "https://github.com/hrsh7th/nvim-cmp" },       -- automatic omni-complete
     { src = "https://github.com/hrsh7th/cmp-nvim-lsp" },   -- automatic omni-complete
+    { src = "https://github.com/b0o/schemastore.nvim" },                      -- json schema
 })
 
 require "mini.pick".setup() -- turn on modal for fzf search
 require "oil".setup()       -- turn on oil
 
-vim.lsp.enable({ "lua_ls", "eslint", "ts_ls", "pyright"}) -- turn on linters
+vim.lsp.enable({ "lua_ls", "eslint", "ts_ls", "pyright", "jsonls" }) -- turn on linters
+
+vim.lsp.config('lspconfig', {})
 
 vim.cmd("colorscheme vague")
 vim.cmd(":hi statusline guibg=NONE")
@@ -104,4 +107,24 @@ vim.lsp.config('pyright', {
   },
 })
 
+-- JSON
+vim.lsp.config("jsonls", {
+    settings = {
+        json = {
+            validate = true,  -- enable built-in JSON validation
+            schemas = {
+                {
+                    description = "package.json",
+                    fileMatch = { "package.json" },
+                    url = "https://json.schemastore.org/package.json",
+                },
+                {
+                    description = "tsconfig.json",
+                    fileMatch = { "tsconfig.json", "tsconfig.*.json" },
+                    url = "https://json.schemastore.org/tsconfig.json",
+                },
+            },
+        },
+    },
+})
 

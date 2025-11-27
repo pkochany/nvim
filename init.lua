@@ -15,8 +15,8 @@ vim.diagnostic.config({
 	underline = true,
 	update_in_insert = false,
 })
-vim.o.completeopt = "menuone,noinsert,noselect"
-vim.o.pumheight = 12                     -- max height of popup menu
+vim.o.completeopt = "menuone,noinsert,noselect"  -- show even if one result, do not insert automatically, do not select automatically
+vim.o.pumheight = 12                             -- max height of popup menu
 
 vim.keymap.set('n', '<leader>d', vim.diagnostic.open_float)
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
@@ -34,26 +34,54 @@ vim.keymap.set('i', '<C-x>', '<C-x><C-o>', { desc = "Trigger omni-completion" })
 vim.keymap.set('i', '<C-f>', '<C-x><C-f>', { desc = "Trigger file completion" })
 
 vim.pack.add({
-	{ src = "https://github.com/vague-theme/vague.nvim" },
-	{ src = "https://github.com/stevearc/oil.nvim" },
-	{ src = "https://github.com/echasnovski/mini.pick" },
-	{ src = "https://github.com/neovim/nvim-lspconfig" },
+	{ src = "https://github.com/vague-theme/vague.nvim" }, -- theme
+	{ src = "https://github.com/stevearc/oil.nvim" },      -- file management
+	{ src = "https://github.com/echasnovski/mini.pick" },  -- modal for fzf search
+	{ src = "https://github.com/neovim/nvim-lspconfig" },  -- lsp server configs
+	{ src = "https://github.com/hrsh7th/nvim-cmp" },       -- automatic omni-complete
+    { src = "https://github.com/hrsh7th/cmp-nvim-lsp" },   -- automatic omni-complete
 })
 
-require "mini.pick".setup()
-require "oil".setup()
+require "mini.pick".setup() -- turn on modal for fzf search
+require "oil".setup()       -- turn on oil
 
-vim.lsp.enable({ "lua_ls", "eslint", "ts_ls", "pyright"})
+vim.lsp.enable({ "lua_ls", "eslint", "ts_ls", "pyright"}) -- turn on linters
 
 vim.cmd("colorscheme vague")
 vim.cmd(":hi statusline guibg=NONE")
 
-vim.o.omnifunc = "v:lua.vim.lsp.omnifunc" -- omni-complete on any keypress
+-- Minimal nvim-cmp setup (auto-triggers on typing, LSP only)
+local cmp = require("cmp")
+cmp.setup({
+  snippet = { expand = function() vim.notify("No snippets used", vim.log.levels.WARN) end },  -- Disable snippets
+  mapping = cmp.mapping.preset.insert({
+    ["<C-Space>"] = cmp.mapping.complete(),  -- Manual trigger if needed
+    ["<C-e>"] = cmp.mapping.abort(),
+    ["<CR>"] = cmp.mapping.confirm({ select = true }),  -- Enter to confirm
+    ["<Tab>"] = cmp.mapping.select_next_item(),
+    ["<S-Tab>"] = cmp.mapping.select_prev_item(),
+  }),
+  sources = cmp.config.sources({
+    { name = "nvim_lsp" },  -- Your Pyright/lua_ls completions
+  }, {
+    { name = "buffer" },    -- Optional: from current buffer (add if you want)
+  }),
+  completion = {
+    completeopt = "menu,menuone,noinsert,noselect",  -- Modern popup behavior
+  },
+  window = {
+    completion = cmp.config.window.bordered(),  -- Optional: pretty border
+    documentation = cmp.config.window.bordered(),
+  },
+})
+
+-- Tell LSP to use cmp (add to your existing LspAttach callback)
 vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(args)
     local client = vim.lsp.get_client_by_id(args.data.client_id)
-    if client and client.supports_method("textDocument/completion") then
+    if client and client:supports_method("textDocument/completion") then  -- ← Changed here: added colon
       vim.bo[args.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
+      require("cmp_nvim_lsp").default_capabilities(client.server_capabilities)  -- If you added this from my last suggestion
     end
   end,
 })

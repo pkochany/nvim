@@ -42,8 +42,43 @@ vim.pack.add({
     { src = "https://github.com/hrsh7th/cmp-nvim-lsp" },   -- automatic omni-complete
     { src = "https://github.com/b0o/schemastore.nvim" },   -- json schema
     { src = "https://github.com/jesseduffield/lazygit" },  -- git wrapper
-	{ src = "https://github.com/akinsho/toggleterm.nvim" } -- toggle multiple terminals during an editing session
+	{ src = "https://github.com/akinsho/toggleterm.nvim" }, -- toggle multiple terminals during an editing session
+	{ src = "https://github.com/mattn/emmet-vim" }, -- html css
+	{ src = "https://github.com/roobert/tailwindcss-colorizer-cmp.nvim" },
+	{ src = "https://github.com/Jezda1337/nvim-html-css" },
+	{ src = "https://github.com/nvim-treesitter/nvim-treesitter" }
 })
+
+require 'nvim-treesitter.configs'.setup {
+  ensure_installed = { "html", "javascript", "typescript", "tsx", "css", "json" },
+  highlight = {
+    enable = true,
+  },
+}
+
+require "html-css".setup({
+  enable_on = { "html", "jsx", "tsx", "javascriptreact", "typescriptreact" },
+  style_sheets = {
+    -- local css
+    "./src/index.css",
+    -- Bootstrap CSS (or path to your installed bootstrap)
+    "./node_modules/bootstrap/dist/css/bootstrap.min.css",
+	"./src/**/*.css",
+  },
+})
+
+-- Enable Emmet for HTML, JSX, and CSS
+vim.g.user_emmet_install_global = 0 -- disable global installation
+vim.g.user_emmet_mode = "i"         -- activate in insert mode
+vim.g.user_emmet_expandabbr_key = "<C-y>" -- key to expand abbreviation
+vim.g.user_emmet_settings = {
+    javascript = {
+        extends = "html",
+    },
+    ["typescript.jsx"] = {
+        extends = "html",
+    },
+}
 
 require "toggleterm".setup({
   size = 20,
@@ -72,7 +107,7 @@ vim.keymap.set("n", "<leader>g", function()
   lazygit:toggle()
 end)
 
-vim.lsp.enable({ "lua_ls", "eslint", "ts_ls", "pyright", "jsonls" }) -- turn on linters
+vim.lsp.enable({ "lua_ls", "eslint", "ts_ls", "pyright", "jsonls", "tailwindcss" }) -- turn on linters
 
 vim.lsp.config('lspconfig', {})
 
@@ -92,8 +127,9 @@ cmp.setup({
   }),
   sources = cmp.config.sources({
     { name = "nvim_lsp" },  -- Your Pyright/lua_ls completions
-  }, {
     { name = "buffer" },    -- Optional: from current buffer (add if you want)
+	{ name = "emmet" },
+	{ name = "html-css" },
   }),
   completion = {
     completeopt = "menu,menuone,noinsert,noselect",  -- Modern popup behavior

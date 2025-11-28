@@ -40,11 +40,37 @@ vim.pack.add({
 	{ src = "https://github.com/neovim/nvim-lspconfig" },  -- lsp server configs
 	{ src = "https://github.com/hrsh7th/nvim-cmp" },       -- automatic omni-complete
     { src = "https://github.com/hrsh7th/cmp-nvim-lsp" },   -- automatic omni-complete
-    { src = "https://github.com/b0o/schemastore.nvim" },                      -- json schema
+    { src = "https://github.com/b0o/schemastore.nvim" },   -- json schema
+    { src = "https://github.com/jesseduffield/lazygit" },  -- git wrapper
+	{ src = "https://github.com/akinsho/toggleterm.nvim" } -- toggle multiple terminals during an editing session
 })
 
+require "toggleterm".setup({
+  size = 20,
+  open_mapping = [[<c-\>]],
+  hide_numbers = true,
+  shade_filetypes = {},
+  shade_terminals = true,
+  shading_factor = 2,
+  start_in_insert = true,
+  insert_mappings = true,
+  persist_size = true,
+  direction = "float",
+  close_on_exit = true,
+})
 require "mini.pick".setup() -- turn on modal for fzf search
 require "oil".setup()       -- turn on oil
+
+-- LAZY GIT
+local Terminal = require("toggleterm.terminal").Terminal
+local lazygit = Terminal:new({
+  cmd = "lazygit",
+  hidden = true,
+  direction = "float",
+})
+vim.keymap.set("n", "<leader>g", function()
+  lazygit:toggle()
+end)
 
 vim.lsp.enable({ "lua_ls", "eslint", "ts_ls", "pyright", "jsonls" }) -- turn on linters
 

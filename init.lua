@@ -46,7 +46,8 @@ vim.pack.add({
 	{ src = "https://github.com/mattn/emmet-vim" }, -- html css
 	{ src = "https://github.com/roobert/tailwindcss-colorizer-cmp.nvim" },
 	{ src = "https://github.com/Jezda1337/nvim-html-css" },
-	{ src = "https://github.com/nvim-treesitter/nvim-treesitter" }
+	{ src = "https://github.com/nvim-treesitter/nvim-treesitter" },
+	{ src = "https://github.com/tpope/vim-surround" }
 })
 
 require 'nvim-treesitter.configs'.setup {

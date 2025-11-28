@@ -59,11 +59,8 @@ require 'nvim-treesitter.configs'.setup {
 require "html-css".setup({
   enable_on = { "html", "jsx", "tsx", "javascriptreact", "typescriptreact" },
   style_sheets = {
-    -- local css
-    "./src/index.css",
-    -- Bootstrap CSS (or path to your installed bootstrap)
+    -- PATHS WITH FILES TO INCLUDE IN AUTOCOMPLETE
     "./node_modules/bootstrap/dist/css/bootstrap.min.css",
-	"./src/**/*.css",
   },
 })
 
@@ -124,6 +121,21 @@ cmp.setup({
     ["<CR>"] = cmp.mapping.confirm({ select = true }),  -- Enter to confirm
     ["<Tab>"] = cmp.mapping.select_next_item(),
     ["<S-Tab>"] = cmp.mapping.select_prev_item(),
+	-- Scroll popup menu by page
+    ["<PageUp>"] = cmp.mapping(function(fallback)
+        if cmp.visible() then
+            cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select, count = 12 })
+        else
+            fallback()
+        end
+    end, { "i", "s" }),
+    ["<PageDown>"] = cmp.mapping(function(fallback)
+        if cmp.visible() then
+            cmp.select_next_item({ behavior = cmp.SelectBehavior.Select, count = 12 })
+        else
+            fallback()
+        end
+    end, { "i", "s" }),
   }),
   sources = cmp.config.sources({
     { name = "nvim_lsp" },  -- Your Pyright/lua_ls completions

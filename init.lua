@@ -53,13 +53,18 @@ vim.pack.add({
 	{ src = "https://github.com/tpope/vim-surround" }
 })
 
--- Example: Ensure specific parsers are installed
-local parsers = { "html", "javascript", "typescript", "tsx", "css", "json" }  -- add your languages
--- Install them once (e.g., on startup, deferred to avoid blocking)
-vim.defer_fn(function()
-  require("nvim-treesitter").install(parsers)
-end, 0)
-require("nvim-treesitter.install").prefer_git = false
+require("nvim-treesitter.configs").setup({
+  ensure_installed = {
+    "html",
+    "javascript",
+    "typescript",
+    "tsx",
+    "css",
+    "json",
+  },
+  sync_install = false, -- async install
+  auto_install = true,
+})
 
 require "html-css".setup({
   enable_on = { "html", "jsx", "tsx", "javascriptreact", "typescriptreact" },

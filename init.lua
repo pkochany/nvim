@@ -53,7 +53,7 @@ vim.pack.add({
 	{ src = "https://github.com/tpope/vim-surround" }
 })
 
-require("nvim-treesitter.configs").setup({
+require("nvim-treesitter.config").setup({
   ensure_installed = {
     "html",
     "javascript",
@@ -62,8 +62,8 @@ require("nvim-treesitter.configs").setup({
     "css",
     "json",
   },
-  sync_install = false, -- async install
-  auto_install = true,
+  sync_install = false,     -- async install (good choice)
+  auto_install = true,      -- automatically install missing parsers when opening a file
 })
 
 require "html-css".setup({

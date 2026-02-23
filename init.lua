@@ -58,12 +58,20 @@ vim.pack.add({
 	{ src = "https://github.com/tpope/vim-surround" }
 })
 
+-- map file extensions for LSPs
+vim.filetype.add({
+  extension = {
+    jsx = "javascriptreact",
+    tsx = "typescriptreact"
+  }
+})
+
 require("nvim-treesitter.config").setup({
   ensure_installed = {
     "html",
-    "javascript",
-    "typescript",
     "tsx",
+    "javascriptreact",
+    "typescriptreact",
     "css",
     "json",
   },
@@ -72,7 +80,7 @@ require("nvim-treesitter.config").setup({
 })
 
 require "html-css".setup({
-  enable_on = { "html", "jsx", "tsx", "javascriptreact", "typescriptreact" },
+  enable_on = { "html", "tsx", "javascriptreact", "typescriptreact", "css", "json" },
   style_sheets = {
     -- PATHS WITH FILES TO INCLUDE IN AUTOCOMPLETE
     "./node_modules/bootstrap/dist/css/bootstrap.min.css",
@@ -106,7 +114,12 @@ require "toggleterm".setup({
   close_on_exit = true,
 })
 require "mini.pick".setup() -- turn on modal for fzf search
-require "oil".setup()       -- turn on oil
+require "oil".setup({        -- turn on oil
+  keymaps = {
+    ["<BS>"] = "actions.parent",  -- Backspace goes up
+	["<Esc>"] = "actions.close",  -- pressing Esc closes Oil
+  }
+})
 
 -- LAZY GIT
 local Terminal = require("toggleterm.terminal").Terminal
@@ -119,8 +132,23 @@ vim.keymap.set("n", "<leader>g", function()
   lazygit:toggle()
 end)
 
+vim.lsp.config("ts_ls", {
+  filetypes = {
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+  },
+})
+vim.lsp.config("eslint", {
+  filetypes = {
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+  },
+})
 vim.lsp.enable({ "lua_ls", "eslint", "ts_ls", "pyright", "jsonls", "tailwindcss" }) -- turn on linters
-
 vim.lsp.config('lspconfig', {})
 
 vim.cmd("colorscheme vague")

@@ -31,12 +31,15 @@ vim.keymap.set('n', '<leader>ff', vim.lsp.buf.format)
 vim.keymap.set('n', '<leader>t', ":Pick files<CR>")
 vim.keymap.set('n', '<leader>r', ":Pick grep_live<CR>")
 vim.keymap.set('n', '<leader>e', ":Oil<CR>")
+vim.keymap.set('n', '<leader>c', ":terminal<CR>")
 vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { noremap = true, silent = true })
 vim.keymap.set('n', '<Tab>', ':bnext<CR>', { desc = "Next buffer" })
 vim.keymap.set('n', '<S-Tab>', ':bprevious<CR>', { desc = "Previous buffer" })
 vim.keymap.set('i', '<C-Space>', vim.lsp.buf.signature_help, { desc = "Show signature" })
 vim.keymap.set('i', '<C-x>', '<C-x><C-o>', { desc = "Trigger omni-completion" })
 vim.keymap.set('i', '<C-f>', '<C-x><C-f>', { desc = "Trigger file completion" })
+vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', { noremap = true, silent = true })
+vim.keymap.set('t', '<leader>c', '<C-\\><C-n>:bd!<CR>', { desc = "Leave terminal" })
 
 vim.pack.add({
 	{ src = "https://github.com/vague-theme/vague.nvim" }, -- theme

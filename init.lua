@@ -32,6 +32,12 @@ vim.keymap.set('n', '<leader>t', ":Pick files<CR>")
 vim.keymap.set('n', '<leader>r', ":Pick grep_live<CR>")
 vim.keymap.set('n', '<leader>e', ":Oil<CR>")
 vim.keymap.set('n', '<leader>c', ":terminal<CR>")
+vim.keymap.set('n', '<leader>b', ":Gitsigns toggle_current_line_blame<CR>")
+vim.keymap.set('n', '<leader>n', ":Gitsigns next_hunk<CR>")
+vim.keymap.set('n', '<leader>p', ":Gitsigns prev_hunk<CR>")
+vim.keymap.set('n', '<leader>d', ":Gitsigns preview_hunk_inline<CR>")
+vim.keymap.set('n', '<leader>s', ":Gitsigns stage_hunk<CR>")
+vim.keymap.set('n', '<leader>o', ":Gitsigns undo_stage_hunk<CR>")
 vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { noremap = true, silent = true })
 vim.keymap.set('n', '<Tab>', ':bnext<CR>', { desc = "Next buffer" })
 vim.keymap.set('n', '<S-Tab>', ':bprevious<CR>', { desc = "Previous buffer" })
@@ -55,7 +61,10 @@ vim.pack.add({
 	{ src = "https://github.com/roobert/tailwindcss-colorizer-cmp.nvim" },
 	{ src = "https://github.com/Jezda1337/nvim-html-css" },
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter" },
-	{ src = "https://github.com/tpope/vim-surround" }
+	{ src = "https://github.com/tpope/vim-surround" },
+	{ src = "https://github.com/nvim-lualine/lualine.nvim" },
+	{ src = "https://github.com/catppuccin/nvim" }, -- theme
+	{ src = "https://github.com/lewis6991/gitsigns.nvim" }
 })
 
 -- map file extensions for LSPs
@@ -120,6 +129,62 @@ require "oil".setup({        -- turn on oil
 	["<Esc>"] = "actions.close",  -- pressing Esc closes Oil
   }
 })
+require('lualine').setup {
+  options = {
+    icons_enabled = true,
+    theme = 'iceberg_dark',
+--    component_separators = { left = '', right = ''},
+--    section_separators = { left = '', right = ''},
+    component_separators = { left = '', right = ''},
+    section_separators = { left = '', right = ''},
+    disabled_filetypes = {
+      statusline = {},
+      winbar = {},
+    },
+    ignore_focus = {},
+    always_divide_middle = true,
+    always_show_tabline = true,
+    globalstatus = false,
+    refresh = {
+      statusline = 1000,
+      tabline = 1000,
+      winbar = 1000,
+      refresh_time = 16, -- ~60fps
+      events = {
+        'WinEnter',
+        'BufEnter',
+        'BufWritePost',
+        'SessionLoadPost',
+        'FileChangedShellPost',
+        'VimResized',
+        'Filetype',
+        'CursorMoved',
+        'CursorMovedI',
+        'ModeChanged',
+      },
+    }
+  },
+  sections = {
+    lualine_a = {'mode'},
+    lualine_b = {'branch', 'diff', 'diagnostics'},
+    lualine_c = {'filename'},
+    lualine_x = {'encoding', 'fileformat', 'filetype'},
+    lualine_y = {'progress'},
+    lualine_z = {'location'}
+  },
+  inactive_sections = {
+    lualine_a = {},
+    lualine_b = {},
+    lualine_c = {'filename'},
+    lualine_x = {'location'},
+    lualine_y = {},
+    lualine_z = {}
+  },
+  tabline = {},
+  winbar = {},
+  inactive_winbar = {},
+  extensions = {}
+}
 
 -- LAZY GIT
 local Terminal = require("toggleterm.terminal").Terminal
@@ -151,7 +216,28 @@ vim.lsp.config("eslint", {
 vim.lsp.enable({ "lua_ls", "eslint", "ts_ls", "pyright", "jsonls", "tailwindcss" }) -- turn on linters
 vim.lsp.config('lspconfig', {})
 
-vim.cmd("colorscheme vague")
+require("catppuccin").setup({
+    flavour = "mocha", -- options: "latte" (light), "frappe", "macchiato", "mocha" (dark)
+    background = { -- Optional: force Neovim background
+        light = "latte",
+        dark = "mocha",
+    },
+    -- You can also enable transparency or styles here
+    transparent_background = false,
+    term_colors = true,
+    styles = {
+        comments = { "italic" },
+        functions = { "bold" },
+    },
+    color_overrides = {
+        mocha = {
+            base = "#1e1e2e",      -- default background
+            mantle = "#181825",    -- darker background
+            crust = "#11111b",     -- darkest background
+        },
+    },
+})
+vim.cmd("colorscheme catppuccin")
 vim.cmd(":hi statusline guibg=NONE")
 
 -- Minimal nvim-cmp setup (auto-triggers on typing, LSP only)

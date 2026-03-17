@@ -31,7 +31,6 @@ vim.keymap.set('n', '<leader>ff', vim.lsp.buf.format)
 vim.keymap.set('n', '<leader>t', ":Pick files<CR>")
 vim.keymap.set('n', '<leader>r', ":Pick grep_live<CR>")
 vim.keymap.set('n', '<leader>e', ":Oil<CR>")
-vim.keymap.set('n', '<leader>c', ":terminal<CR>")
 vim.keymap.set('n', '<leader>b', ":Gitsigns toggle_current_line_blame<CR>")
 vim.keymap.set('n', '<leader>n', ":Gitsigns next_hunk<CR>")
 vim.keymap.set('n', '<leader>p', ":Gitsigns prev_hunk<CR>")
@@ -45,7 +44,6 @@ vim.keymap.set('i', '<C-Space>', vim.lsp.buf.signature_help, { desc = "Show sign
 vim.keymap.set('i', '<C-x>', '<C-x><C-o>', { desc = "Trigger omni-completion" })
 vim.keymap.set('i', '<C-f>', '<C-x><C-f>', { desc = "Trigger file completion" })
 vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', { noremap = true, silent = true })
-vim.keymap.set('t', '<leader>c', '<C-\\><C-n>:bd!<CR>', { desc = "Leave terminal" })
 
 vim.pack.add({
 	{ src = "https://github.com/vague-theme/vague.nvim" }, -- theme
@@ -55,7 +53,6 @@ vim.pack.add({
 	{ src = "https://github.com/hrsh7th/nvim-cmp" },       -- automatic omni-complete
     { src = "https://github.com/hrsh7th/cmp-nvim-lsp" },   -- automatic omni-complete
     { src = "https://github.com/b0o/schemastore.nvim" },   -- json schema
-    { src = "https://github.com/jesseduffield/lazygit" },  -- git wrapper
 	{ src = "https://github.com/akinsho/toggleterm.nvim" }, -- toggle multiple terminals during an editing session
 	{ src = "https://github.com/mattn/emmet-vim" }, -- html css
 	{ src = "https://github.com/roobert/tailwindcss-colorizer-cmp.nvim" },
@@ -331,3 +328,16 @@ vim.lsp.config("jsonls", {
     },
 })
 
+-- polecenie na agenta kursora w pliku
+vim.api.nvim_create_user_command("Agent", function(opts)
+  local file = vim.fn.expand("%")
+  local line = vim.fn.line(".")
+  local prompt = opts.args
+
+  local cmd = string.format(
+    "cursor-agent \"%s (file: %s line: %d)\"",
+    prompt, file, line
+  )
+
+  vim.cmd("split | terminal " .. cmd)
+end, { nargs = "+" })

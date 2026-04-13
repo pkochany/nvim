@@ -43,7 +43,7 @@ vim.keymap.set('n', '<S-Tab>', ':bprevious<CR>', { desc = "Previous buffer" })
 vim.keymap.set('i', '<C-Space>', vim.lsp.buf.signature_help, { desc = "Show signature" })
 vim.keymap.set('i', '<C-x>', '<C-x><C-o>', { desc = "Trigger omni-completion" })
 vim.keymap.set('i', '<C-f>', '<C-x><C-f>', { desc = "Trigger file completion" })
-vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', { noremap = true, silent = true })
+vim.keymap.set('t', '<leader><Esc>', '<C-\\><C-n>', { noremap = true, silent = true })
 
 vim.pack.add({
 	{ src = "https://github.com/vague-theme/vague.nvim" }, -- theme

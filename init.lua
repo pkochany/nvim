@@ -70,8 +70,13 @@ vim.pack.add({
 	{ src = "https://github.com/tpope/vim-surround" },
 	{ src = "https://github.com/nvim-lualine/lualine.nvim" },
 	{ src = "https://github.com/catppuccin/nvim" }, -- theme
-	{ src = "https://github.com/lewis6991/gitsigns.nvim" }
+	{ src = "https://github.com/lewis6991/gitsigns.nvim" },
+	{ src = "https://github.com/nvim-tree/nvim-web-devicons" },
+	{ src = "https://github.com/akinsho/bufferline.nvim" }
 })
+
+vim.opt.termguicolors = true
+require("bufferline").setup({})
 
 -- map file extensions for LSPs
 vim.filetype.add({

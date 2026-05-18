@@ -45,6 +45,15 @@ vim.keymap.set('i', '<C-x>', '<C-x><C-o>', { desc = "Trigger omni-completion" })
 vim.keymap.set('i', '<C-f>', '<C-x><C-f>', { desc = "Trigger file completion" })
 vim.keymap.set('t', '<leader><Esc>', '<C-\\><C-n>', { noremap = true, silent = true })
 
+vim.keymap.set("v", "<leader>t", function()
+  vim.cmd('normal! "zy')
+  local text = vim.fn.getreg("z")
+  vim.cmd("terminal")
+  local chan = vim.b.terminal_job_id
+  vim.fn.chansend(chan, text .. "\nexit")
+  vim.cmd("startinsert")
+end, { desc = "Run selection in terminal" })
+
 vim.pack.add({
 	{ src = "https://github.com/vague-theme/vague.nvim" }, -- theme
 	{ src = "https://github.com/stevearc/oil.nvim" },      -- file management

@@ -86,12 +86,12 @@ vim.filetype.add({
   }
 })
 
-require("nvim-treesitter.config").setup({
+require("nvim-treesitter.configs").setup({
   ensure_installed = {
     "html",
     "tsx",
-    "javascriptreact",
-    "typescriptreact",
+    "javascript",
+    "typescript",
     "css",
     "json",
   },

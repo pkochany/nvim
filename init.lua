@@ -66,7 +66,7 @@ vim.pack.add({
 	{ src = "https://github.com/mattn/emmet-vim" }, -- html css
 	{ src = "https://github.com/roobert/tailwindcss-colorizer-cmp.nvim" },
 	{ src = "https://github.com/Jezda1337/nvim-html-css" },
-	{ src = "https://github.com/nvim-treesitter/nvim-treesitter" },
+	{ src = "https://github.com/nvim-treesitter/nvim-treesitter", version = "main" },
 	{ src = "https://github.com/tpope/vim-surround" },
 	{ src = "https://github.com/nvim-lualine/lualine.nvim" },
 	{ src = "https://github.com/catppuccin/nvim" }, -- theme
@@ -86,17 +86,28 @@ vim.filetype.add({
   }
 })
 
-require("nvim-treesitter.configs").setup({
-  ensure_installed = {
-    "html",
-    "tsx",
-    "javascript",
-    "typescript",
-    "css",
-    "json",
-  },
-  sync_install = false,     -- async install (good choice)
-  auto_install = true,      -- automatically install missing parsers when opening a file
+require("nvim-treesitter").setup({})
+
+local treesitter_langs = {
+  "html",
+  "tsx",
+  "javascript",
+  "typescript",
+  "css",
+  "json",
+  "lua",
+}
+require("nvim-treesitter").install(treesitter_langs)
+
+vim.api.nvim_create_autocmd("FileType", {
+  callback = function(ev)
+    local lang = vim.treesitter.language.get_lang(ev.match)
+    if not lang then
+      return
+    end
+    require("nvim-treesitter").install(lang)
+    pcall(vim.treesitter.start)
+  end,
 })
 
 require "html-css".setup({

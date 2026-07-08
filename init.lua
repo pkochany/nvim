@@ -21,9 +21,9 @@ vim.diagnostic.config({
 vim.o.completeopt = "menuone,noinsert,noselect"  -- show even if one result, do not insert automatically, do not select automatically
 vim.o.pumheight = 12                             -- max height of popup menu
 
-vim.keymap.set('n', '<leader>d', vim.diagnostic.open_float)
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
+vim.keymap.set('n', '<leader>c', vim.diagnostic.open_float)
+vim.keymap.set('n', '<leader>z', vim.diagnostic.goto_prev)
+vim.keymap.set('n', '<leader>x', vim.diagnostic.goto_next)
 vim.keymap.set('n', '<leader>o', ':update<CR> :source<CR>')
 vim.keymap.set('n', '<leader>w', ':write<CR>')
 vim.keymap.set('n', '<leader>q', ':bdelete<CR>')
@@ -235,7 +235,94 @@ vim.lsp.config("eslint", {
     "typescriptreact",
   },
 })
-vim.lsp.enable({ "lua_ls", "eslint", "ts_ls", "pyright", "jsonls", "tailwindcss" }) -- turn on linters
+
+local function has_ruff_in_pyproject(pyproject)
+  if vim.uv.fs_stat(pyproject) == nil then
+    return false
+  end
+
+  local content = table.concat(vim.fn.readfile(pyproject), "\n")
+  return content:match("%[tool%.ruff%]") ~= nil
+    or content:match("%[tool%.ruff%..-%]") ~= nil
+end
+
+local function has_ruff_config_in_dir(dir)
+  if vim.uv.fs_stat(dir .. "/ruff.toml") or vim.uv.fs_stat(dir .. "/.ruff.toml") then
+    return true
+  end
+
+  return has_ruff_in_pyproject(dir .. "/pyproject.toml")
+end
+
+local function resolve_ruff_root(bufnr)
+  local fname = vim.api.nvim_buf_get_name(bufnr)
+  if type(fname) ~= "string" or fname == "" then
+    return nil
+  end
+
+  if fname:match("^file://") then
+    fname = vim.uri_to_fname(fname)
+  end
+
+  if fname:match("^[%a][%w+.-]*://") then
+    return nil
+  end
+
+  local start = vim.fs.dirname(fname)
+  if type(start) ~= "string" or start == "" then
+    return nil
+  end
+
+  if has_ruff_config_in_dir(start) then
+    return start
+  end
+
+  for dir in vim.fs.parents(start) do
+    if has_ruff_config_in_dir(dir) then
+      return dir
+    end
+  end
+
+  return nil
+end
+
+local function find_ruff_executable(root_dir)
+  if type(root_dir) == "string" and root_dir ~= "" then
+    for _, venv in ipairs({ ".venv", "venv" }) do
+      local ruff = root_dir .. "/" .. venv .. "/bin/ruff"
+      if vim.uv.fs_stat(ruff) then
+        return ruff
+      end
+    end
+  end
+
+  if vim.fn.executable("ruff") == 1 then
+    return "ruff"
+  end
+
+  return nil
+end
+
+vim.lsp.config("ruff", {
+  root_dir = function(bufnr, on_dir)
+    on_dir(resolve_ruff_root(bufnr))
+  end,
+  cmd = function(dispatchers, config)
+    local ruff = find_ruff_executable(config.root_dir)
+    if not ruff then
+      vim.notify("ruff executable not found for " .. tostring(config.root_dir), vim.log.levels.WARN)
+      return nil
+    end
+
+    return vim.lsp.rpc.start({ ruff, "server" }, dispatchers, {
+      cwd = config.cmd_cwd,
+      env = config.cmd_env,
+      detached = config.detached,
+    })
+  end,
+})
+
+vim.lsp.enable({ "lua_ls", "eslint", "ts_ls", "pyright", "ruff", "jsonls", "tailwindcss" }) -- turn on linters
 vim.lsp.config('lspconfig', {})
 
 require("catppuccin").setup({

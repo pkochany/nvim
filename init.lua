@@ -21,6 +21,7 @@ vim.diagnostic.config({
 vim.o.completeopt = "menuone,noinsert,noselect"  -- show even if one result, do not insert automatically, do not select automatically
 vim.o.pumheight = 12                             -- max height of popup menu
 
+vim.keymap.set('n', '<leader>i', vim.lsp.buf.hover)
 vim.keymap.set('n', '<leader>c', vim.diagnostic.open_float)
 vim.keymap.set('n', '<leader>z', vim.diagnostic.goto_prev)
 vim.keymap.set('n', '<leader>x', vim.diagnostic.goto_next)
@@ -72,7 +73,8 @@ vim.pack.add({
 	{ src = "https://github.com/catppuccin/nvim" }, -- theme
 	{ src = "https://github.com/lewis6991/gitsigns.nvim" },
 	{ src = "https://github.com/nvim-tree/nvim-web-devicons" },
-	{ src = "https://github.com/akinsho/bufferline.nvim" }
+	{ src = "https://github.com/akinsho/bufferline.nvim" },
+    { src = "https://github.com/refractalize/oil-git-status.nvim" }
 })
 
 vim.opt.termguicolors = true
@@ -96,6 +98,7 @@ local treesitter_langs = {
   "css",
   "json",
   "lua",
+  "php",
 }
 require("nvim-treesitter").install(treesitter_langs)
 
@@ -149,7 +152,16 @@ require "oil".setup({        -- turn on oil
   keymaps = {
     ["<BS>"] = "actions.parent",  -- Backspace goes up
 	["<Esc>"] = "actions.close",  -- pressing Esc closes Oil
+  },
+  view_options = {
+    show_hidden = true,
+  },
+  win_options = {
+    signcolumn = "yes:1", -- add column for git status
   }
+})
+require("oil-git-status").setup({
+  show_ignored = true,
 })
 require('lualine').setup {
   options = {
@@ -322,7 +334,7 @@ vim.lsp.config("ruff", {
   end,
 })
 
-vim.lsp.enable({ "lua_ls", "eslint", "ts_ls", "pyright", "ruff", "jsonls", "tailwindcss" }) -- turn on linters
+vim.lsp.enable({ "lua_ls", "eslint", "ts_ls", "pyright", "ruff", "jsonls", "tailwindcss", "phpantom_lsp", "bashls" }) -- turn on linters
 vim.lsp.config('lspconfig', {})
 
 require("catppuccin").setup({
